@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Holo Card Studio · 3D 交互全息闪卡工作台</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0%' stop-color='%2360a5fa'/><stop offset='50%' stop-color='%23f472b6'/><stop offset='100%' stop-color='%23fde047'/></linearGradient></defs><rect x='10' y='6' width='44' height='52' rx='8' fill='%2312151e' stroke='url(%23g)' stroke-width='4'/><path d='M32 18l5 10 10 4-10 4-5 10-5-10-10-4 10-4z' fill='url(%23g)'/></svg>" />
+
+  <!-- Official pokemon-cards-css Core & Shaders -->
+  <link rel="stylesheet" href="./css/cards.css" />
+  <link rel="stylesheet" href="./css/cards/base.css" />
+  <link rel="stylesheet" href="./css/cards/basic.css" />
+  <link rel="stylesheet" href="./css/cards/amazing-rare.css" />
+  <link rel="stylesheet" href="./css/cards/cosmos-holo.css" />
+  <link rel="stylesheet" href="./css/cards/radiant-holo.css" />
+  <link rel="stylesheet" href="./css/cards/rainbow-alt.css" />
+  <link rel="stylesheet" href="./css/cards/rainbow-holo.css" />
+  <link rel="stylesheet" href="./css/cards/regular-holo.css" />
+  <link rel="stylesheet" href="./css/cards/reverse-holo.css" />
+  <link rel="stylesheet" href="./css/cards/secret-rare.css" />
+  <link rel="stylesheet" href="./css/cards/shiny-rare.css" />
+  <link rel="stylesheet" href="./css/cards/shiny-v.css" />
+  <link rel="stylesheet" href="./css/cards/shiny-vmax.css" />
+  <link rel="stylesheet" href="./css/cards/swsh-pikachu.css" />
+  <link rel="stylesheet" href="./css/cards/trainer-full-art.css" />
+  <link rel="stylesheet" href="./css/cards/trainer-gallery-holo.css" />
+  <link rel="stylesheet" href="./css/cards/trainer-gallery-secret-rare.css" />
+  <link rel="stylesheet" href="./css/cards/trainer-gallery-v-max.css" />
+  <link rel="stylesheet" href="./css/cards/trainer-gallery-v-regular.css" />
+  <link rel="stylesheet" href="./css/cards/v-full-art.css" />
+  <link rel="stylesheet" href="./css/cards/v-max.css" />
+  <link rel="stylesheet" href="./css/cards/v-regular.css" />
+  <link rel="stylesheet" href="./css/cards/v-star.css" />
+
+  <!-- Extensible Custom Shaders & 3D Studio Enhancements -->
+  <link rel="stylesheet" href="./css/custom/shaders.css" />
+  <link rel="stylesheet" href="./css/enhancements.css" />
+  <link rel="stylesheet" href="./css/studio-ui.css" />
+</head>
+<body>
+  <div class="drop-overlay">
+    <div class="drop-overlay__box">
+      松开鼠标立即加载图片到 3D 全息闪卡<br />
+      <span style="font-size: 13px; color: #94a3b8; font-weight: 400;">100% 本地浏览器渲染，不上传至任何服务器</span>
+    </div>
+  </div>
+
+  <div class="studio-shell">
+    <!-- Left / Center Interactive 3D Stage -->
+    <main class="viewport">
+      <div class="topbar">
+        <div class="brand-pill">
+          <span class="brand-dot"></span>
+          <span>Holo Card Studio</span>
+          <span class="brand-sub">pokemon-cards-css + 3D 物理增强引擎</span>
+        </div>
+        <div class="stage-actions">
+          <button class="pill-btn" id="flipTopBtn" type="button">🔄 翻面</button>
+          <button class="pill-btn" id="resetTiltBtn" type="button">🎯 回正</button>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="studio-aura"></div>
+        <div class="card-wrap">
+          <div class="card-shadow"></div>
+          <div
+            class="card interactive full-bleed has-slab has-bevel"
+            id="card"
+            data-rarity="rare holo cosmos"
+          >
+            <div class="card__translater">
+              <div class="card__rotator" id="rotator" tabindex="0">
+                <!-- 8-layer 3D brushed metallic slab thickness -->
+                <div class="slab-layer" style="transform: translateZ(-1px);"></div>
+                <div class="slab-layer" style="transform: translateZ(-2px); filter: brightness(0.95);"></div>
+                <div class="slab-layer" style="transform: translateZ(-3px); filter: brightness(0.90);"></div>
+                <div class="slab-layer" style="transform: translateZ(-4px); filter: brightness(0.85);"></div>
+                <div class="slab-layer" style="transform: translateZ(-5px); filter: brightness(0.80);"></div>
+                <div class="slab-layer" style="transform: translateZ(-6px); filter: brightness(0.75);"></div>
+                <div class="slab-layer" style="transform: translateZ(-7px); filter: brightness(0.70);"></div>
+                <div class="slab-layer" style="transform: translateZ(-8px); filter: brightness(0.65);"></div>
+
+                <!-- Card Back Face -->
+                <div class="card__back">
+                  <div class="card-back__badge" id="backBadge">LIMITED EDITION · HOLO 3D</div>
+                  <div class="card-back__title" id="backTitle">HOLO CARD STUDIO</div>
+                  <div class="card-back__desc" id="backDesc">支持鼠标实时 3D 倾斜、8 层金属卡边厚度与正反面翻转。可直接拖入产品图、海报或电子名片使用。</div>
+                  <div class="card-back__meta">INTERACTIVE 3D COLLECTION</div>
+                  <div class="metallic-bevel"></div>
+                </div>
+
+                <!-- Card Front Face -->
+                <div class="card__front">
+                  <img class="card__artwork" id="artwork" alt="Interactive 3D Holo Card" />
+                  <div class="card__shine"></div>
+                  <div class="card__glare"></div>
+                  <div class="metallic-bevel"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stage-hint">
+        移动鼠标或倾斜手机感受 3D 光影 · 点击卡片翻面 · 支持拖拽图片或 Ctrl+V 直接粘贴截图
+      </div>
+    </main>
+
+    <!-- Right Control Sidebar -->
+    <aside class="sidebar">
+      <section class="panel-section">
+        <div class="section-title">
+          <span>1. 图片素材（本地渲染）</span>
+        </div>
+        <label class="upload-btn">
+          📁 选择本地图片（或直接拖入 / Ctrl+V）
+          <input id="imageInput" type="file" accept="image/*" hidden />
+        </label>
+        <div class="demo-row">
+          <button class="mini-btn demo-btn active" data-demo="obsidian" type="button">黑金竖卡</button>
+          <button class="mini-btn demo-btn" data-demo="jewelry" type="button">1:1 珠宝</button>
+          <button class="mini-btn demo-btn" data-demo="cyber" type="button">16:9 横版</button>
+        </div>
+      </section>
+
+      <section class="panel-section">
+        <div class="section-title">
+          <span>2. 闪卡材质着色器</span>
+        </div>
+        <div class="preset-group-label">自研扩展材质（css/custom/shaders.css）</div>
+        <div class="preset-grid" id="customPresetGrid"></div>
+
+        <div class="preset-group-label">pokemon-cards-css 官方高阶材质（17 种）</div>
+        <div class="preset-grid" id="officialPresetGrid"></div>
+
+        <div class="preset-group-label">叠加浮雕压纹贴图（--foil）</div>
+        <select id="foilSelect" aria-label="Foil texture override"></select>
+      </section>
+
+      <section class="panel-section">
+        <div class="section-title">
+          <span>3. 3D 物理增强与护脸遮罩</span>
+        </div>
+        <label class="toggle-row">
+          <span>8 层金属拉丝厚度</span>
+          <input id="toggleSlab" type="checkbox" checked />
+        </label>
+        <label class="toggle-row">
+          <span>金属倒角流光边框</span>
+          <input id="toggleBevel" type="checkbox" checked />
+        </label>
+        <label class="toggle-row">
+          <span>全图铺满闪光（Full-Bleed）</span>
+          <input id="toggleFullBleed" type="checkbox" checked />
+        </label>
+        <label class="toggle-row">
+          <span>智能主体 / 护脸降反光遮罩</span>
+          <input id="toggleAutoMask" type="checkbox" />
+        </label>
+        <label class="toggle-row">
+          <span>待机呼吸悬浮（离开鼠标自动摇摆）</span>
+          <input id="toggleIdle" type="checkbox" checked />
+        </label>
+        <div class="action-stack" style="margin-top: 2px;">
+          <label class="secondary-btn" style="text-align: center; cursor: pointer;">
+            🎭 上传黑白遮罩
+            <input id="maskInput" type="file" accept="image/*" hidden />
+          </label>
+          <button class="secondary-btn" id="clearMaskBtn" type="button">🧹 清除遮罩</button>
+        </div>
+      </section>
+
+      <section class="panel-section">
+        <div class="section-title">
+          <span>4. 光影与尺寸微调</span>
+        </div>
+        <div class="slider-row">
+          <div class="slider-header"><span>全息强度</span><span id="intensityVal">100%</span></div>
+          <input id="intensityRange" type="range" min="0" max="150" value="100" />
+        </div>
+        <div class="slider-row">
+          <div class="slider-header"><span>3D 倾斜幅度</span><span id="tiltVal">18°</span></div>
+          <input id="tiltRange" type="range" min="5" max="30" value="18" />
+        </div>
+        <div class="slider-row">
+          <div class="slider-header"><span>卡片圆角</span><span id="radiusVal">18px</span></div>
+          <input id="radiusRange" type="range" min="0" max="36" value="18" />
+        </div>
+        <div class="slider-row">
+          <div class="slider-header"><span>卡片最大宽度</span><span id="sizeVal">400px</span></div>
+          <input id="sizeRange" type="range" min="240" max="760" value="400" />
+        </div>
+      </section>
+
+      <section class="panel-section">
+        <div class="section-title">
+          <span>5. 卡片背面文案（点击翻面查看）</span>
+          <button class="mini-btn" id="flipSideBtn" type="button" style="padding: 3px 8px;">翻面</button>
+        </div>
+        <input id="backBadgeInput" type="text" value="LIMITED EDITION · HOLO 3D" placeholder="顶部角标文字" />
+        <input id="backTitleInput" type="text" value="HOLO CARD STUDIO" placeholder="背面标题" />
+        <textarea id="backDescInput" placeholder="背面描述（适合写产品参数、批发报价或联系信息）">支持鼠标实时 3D 倾斜、8 层金属卡边厚度与正反面翻转。可直接拖入产品图、海报或电子名片使用。</textarea>
+      </section>
+
+      <section class="panel-section">
+        <div class="section-title">
+          <span>6. 导出与嵌入独立站</span>
+        </div>
+        <div class="action-stack">
+          <button class="primary-btn" id="exportHtmlBtn" type="button">📦 导出独立 HTML</button>
+          <button class="secondary-btn" id="copyEmbedBtn" type="button">🔗 复制 iframe 嵌入</button>
+        </div>
+      </section>
+    </aside>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>

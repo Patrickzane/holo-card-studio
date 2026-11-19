@@ -1,0 +1,309 @@
+/*
+ * 3D Enhancements Layer — extends pokemon-cards-css without modifying upstream css/cards/*.css
+ * Adds: 8-layer metallic slab thickness, chamfered bevel edge, full-bleed mode,
+ * 180° flip support, dynamic floor shadow, studio aura, and subject/skin mask scaling.
+ */
+
+:root {
+  --pointer-x: 50%;
+  --pointer-y: 50%;
+  --pointer-from-center: 0;
+  --pointer-from-top: 0.5;
+  --pointer-from-left: 0.5;
+  --background-x: 50%;
+  --background-y: 50%;
+  --rotate-x: 0deg;
+  --rotate-y: 0deg;
+  --flip-y: 0deg;
+  --pointer-angle: 135deg;
+  --card-scale: 1;
+  --translate-x: 0px;
+  --translate-y: 0px;
+  --card-opacity: 0.85;
+  --holo-intensity: 1;
+  --card-width: 380px;
+  --card-aspect: 0.718;
+  --card-radius: 18px;
+  --seedx: 0.35;
+  --seedy: 0.42;
+  --cosmosbg: center center;
+}
+
+/* Studio stage & dynamic lighting */
+.stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1400px;
+  width: 100%;
+  height: 100%;
+  padding: 28px;
+}
+
+.studio-aura {
+  position: absolute;
+  width: min(760px, 85vw);
+  height: min(560px, 75vh);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--card-glow, #7dd3fc) 22%, transparent) 0%,
+    rgba(255, 130, 175, 0.08) 45%,
+    transparent 74%
+  );
+  filter: blur(52px);
+  pointer-events: none;
+  transform: translate3d(
+    calc((var(--pointer-from-left, 0.5) - 0.5) * -48px),
+    calc((var(--pointer-from-top, 0.5) - 0.5) * -48px),
+    0
+  );
+  transition: background 0.35s ease;
+}
+
+.card-wrap {
+  position: relative;
+  display: grid;
+  place-items: center;
+  transform-style: preserve-3d;
+}
+
+.card-shadow {
+  position: absolute;
+  width: calc(var(--card-width) * 0.94);
+  aspect-ratio: var(--card-aspect);
+  border-radius: var(--card-radius);
+  background: rgba(0, 0, 0, 0.78);
+  filter: blur(34px);
+  transform: translate3d(
+    calc((var(--pointer-from-left, 0.5) - 0.5) * -38px),
+    calc(28px + (var(--pointer-from-top, 0.5) - 0.5) * -28px),
+    -90px
+  ) scale(0.95);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Full-bleed override so all upstream shaders cover custom aspect-ratio artwork */
+.card.full-bleed {
+  --clip: inset(0% round var(--card-radius));
+  --clip-invert: inset(0% round var(--card-radius));
+  --clip-stage: inset(0% round var(--card-radius));
+  --clip-trainer: inset(0% round var(--card-radius));
+  --clip-borders: inset(0% round var(--card-radius));
+}
+
+.card {
+  width: var(--card-width);
+  max-width: 100%;
+  aspect-ratio: var(--card-aspect);
+  pointer-events: auto;
+  z-index: 2;
+}
+
+/* Override upstream translateZ(150px) which clips wide landscape cards */
+.card .card__translater {
+  perspective: 1400px;
+  transform: translate3d(var(--translate-x, 0px), var(--translate-y, 0px), 0px) scale(var(--card-scale, 1));
+  transform-style: preserve-3d;
+}
+
+/* Smooth rotation combining live pointer tilt + 180deg flip */
+.card .card__rotator {
+  transform: rotateY(calc(var(--rotate-x, 0deg) + var(--flip-y, 0deg))) rotateX(var(--rotate-y, 0deg));
+  transform-style: preserve-3d;
+  cursor: grab;
+  outline: none;
+  box-shadow: none !important;
+  transition: none;
+}
+
+.card .card__rotator:active {
+  cursor: grabbing;
+}
+
+/* Force artwork img to cover custom card aspect cleanly */
+.card .card__front {
+  transform: translate3d(0, 0, 0.5px);
+  background: #12151e;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  isolation: isolate;
+}
+
+.card .card__front > img.card__artwork {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: translate3d(0, 0, 0.01px);
+  border-radius: var(--card-radius);
+}
+
+/* Scale upstream shader opacity cleanly with slider */
+.card .card__shine {
+  opacity: calc(var(--card-opacity, 0.85) * var(--holo-intensity, 1));
+}
+
+.card .card__glare {
+  opacity: calc(var(--card-opacity, 0.85) * clamp(0.25, var(--holo-intensity, 1), 1.15));
+}
+
+/* Auto/custom subject mask when enabled */
+.card.masked .card__shine {
+  -webkit-mask-image: var(--mask);
+  mask-image: var(--mask);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-position: center center;
+  mask-position: center center;
+}
+
+/* 8-Layer 3D Brushed Metallic Slab Thickness */
+.card .slab-layer {
+  display: none;
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--card-radius);
+  pointer-events: none;
+  backface-visibility: visible;
+  background: linear-gradient(
+    var(--pointer-angle, 135deg),
+    #6e7485 0%,
+    #cfd5e2 28%,
+    #535868 54%,
+    #e6ebf5 78%,
+    #666c7c 100%
+  );
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+}
+
+.card.has-slab .slab-layer {
+  display: block;
+}
+
+/* Metallic Chamfered Bevel Frame */
+.card .metallic-bevel {
+  display: none;
+  position: absolute;
+  inset: 0;
+  border-radius: var(--card-radius);
+  pointer-events: none;
+  z-index: 6;
+  padding: 4px;
+  transform: translateZ(2px);
+  background: conic-gradient(
+    from var(--pointer-angle, 135deg),
+    rgba(255, 255, 255, 0.96),
+    rgba(155, 170, 198, 0.42),
+    rgba(255, 190, 225, 0.72),
+    rgba(135, 222, 255, 0.78),
+    rgba(255, 255, 255, 0.96)
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.35);
+}
+
+.card.has-bevel .metallic-bevel {
+  display: block;
+}
+
+.card[data-preset-group="gold"].has-bevel .metallic-bevel,
+.card[data-rarity="rare secret"].has-bevel .metallic-bevel {
+  background: conic-gradient(
+    from var(--pointer-angle, 135deg),
+    #fff6c8,
+    #b68524,
+    #ffe37d,
+    #7f5812,
+    #fff6c8
+  );
+}
+
+/* Card Back Face — CRITICAL reset against base.css .card__rotator * rule */
+.card .card__back {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 28px 24px;
+  text-align: center;
+  border-radius: var(--card-radius);
+  background:
+    radial-gradient(circle at var(--pointer-x, 50%) var(--pointer-y, 50%), #2c334a 0%, #141724 62%, #0a0c12 100%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  transform: rotateY(180deg) translateZ(9px);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  z-index: 1;
+}
+
+.card:not(.has-slab) .card__back {
+  transform: rotateY(180deg) translateZ(1px);
+}
+
+.card .card__back * {
+  width: auto;
+  height: auto;
+  display: revert;
+  grid-area: auto;
+  aspect-ratio: auto;
+  overflow: visible;
+  transform-style: flat;
+  pointer-events: none;
+}
+
+.card .card__back .metallic-bevel {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: none;
+}
+
+.card-back__badge {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #ffd97d;
+  border: 1px solid rgba(255, 217, 125, 0.42);
+  background: rgba(255, 217, 125, 0.08);
+  padding: 5px 14px;
+  border-radius: 999px;
+}
+
+.card-back__title {
+  font-size: clamp(18px, 3vw, 26px);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #f4f6fc;
+  line-height: 1.25;
+}
+
+.card-back__desc {
+  font-size: clamp(12px, 1.8vw, 14px);
+  line-height: 1.65;
+  color: #a6aec6;
+  max-width: 86%;
+  white-space: pre-line;
+}
+
+.card-back__meta {
+  margin-top: 8px;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: rgba(255, 255, 255, 0.42);
+  text-transform: uppercase;
+}

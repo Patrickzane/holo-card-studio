@@ -1,0 +1,132 @@
+/*
+ * Custom Extensible Shader Pack — Holo Card Studio
+ * Add your own custom CSS holographic shaders here without touching css/cards/*.css.
+ * Register each new data-rarity value inside js/presets.js under group: "custom".
+ */
+
+/* 1. Neon Studio — micro-etched diagonal grating + smooth prism sweep + studio glare */
+.card[data-rarity="custom-neon-studio"] .card__shine {
+  clip-path: var(--clip);
+  background-image:
+    repeating-linear-gradient(
+      125deg,
+      rgba(255, 255, 255, 0) 0px,
+      rgba(255, 255, 255, 0.09) 2px,
+      rgba(0, 0, 0, 0.07) 4px
+    ),
+    linear-gradient(
+      var(--pointer-angle, 135deg),
+      rgba(255, 65, 130, 0.38) 0%,
+      rgba(255, 210, 75, 0.34) 24%,
+      rgba(65, 245, 180, 0.36) 48%,
+      rgba(75, 175, 255, 0.4) 72%,
+      rgba(205, 100, 255, 0.38) 100%
+    ),
+    radial-gradient(
+      farthest-corner circle at var(--pointer-x) var(--pointer-y),
+      rgba(255, 255, 255, 0.55) 5%,
+      rgba(120, 140, 180, 0.15) 45%,
+      rgba(0, 0, 0, 0.75) 115%
+    );
+  background-size: 100% 100%, 240% 240%, cover;
+  background-position: 0 0, var(--background-x) var(--background-y), center center;
+  background-blend-mode: overlay, color-dodge;
+  mix-blend-mode: color-dodge;
+  filter: brightness(0.95) contrast(1.35) saturate(1.25);
+}
+
+.card[data-rarity="custom-neon-studio"] .card__shine::before {
+  content: "";
+  background-image:
+    url("/img/cosmos-middle-trans.png"),
+    radial-gradient(
+      circle at var(--pointer-x) var(--pointer-y),
+      rgba(255, 255, 255, 0.75) 0%,
+      rgba(255, 255, 255, 0.15) 45%,
+      transparent 75%
+    );
+  background-size: cover, cover;
+  background-position: calc(var(--background-x) * 0.8) calc(var(--background-y) * 0.8), center;
+  mix-blend-mode: screen;
+  opacity: 0.6;
+}
+
+.card[data-rarity="custom-neon-studio"] .card__glare {
+  background-image: radial-gradient(
+    farthest-corner circle at var(--pointer-x) var(--pointer-y),
+    rgba(255, 255, 255, 0.62) 0%,
+    rgba(255, 255, 255, 0.22) 26%,
+    rgba(0, 0, 0, 0.28) 90%
+  );
+  mix-blend-mode: overlay;
+}
+
+/* 2. Luxury Diamond — platinum glitter + cold diamond fire for jewelry & watches */
+.card[data-rarity="custom-luxury-diamond"] .card__shine {
+  clip-path: var(--clip);
+  background-image:
+    var(--glitter),
+    var(--foil, url("/img/geometric.png")),
+    linear-gradient(
+      calc(var(--pointer-angle, 135deg) + 20deg),
+      rgba(220, 238, 255, 0.55) 0%,
+      rgba(255, 245, 225, 0.45) 35%,
+      rgba(175, 220, 255, 0.52) 70%,
+      rgba(255, 255, 255, 0.55) 100%
+    );
+  background-size: 22% 22%, 60% 60%, 220% 220%;
+  background-position:
+    calc(50% + (var(--pointer-from-left) - 0.5) * 18px) calc(50% + (var(--pointer-from-top) - 0.5) * 18px),
+    center center,
+    var(--background-x) var(--background-y);
+  background-blend-mode: screen, overlay, normal;
+  mix-blend-mode: color-dodge;
+  filter: brightness(0.9) contrast(1.45) saturate(0.85);
+}
+
+.card[data-rarity="custom-luxury-diamond"] .card__shine::after {
+  content: "";
+  background-image:
+    radial-gradient(
+      circle at var(--pointer-x) var(--pointer-y),
+      rgba(255, 255, 255, 0.85) 0%,
+      rgba(210, 235, 255, 0.25) 28%,
+      rgba(0, 0, 0, 0.7) 80%
+    );
+  mix-blend-mode: multiply;
+}
+
+.card[data-rarity="custom-luxury-diamond"] .card__glare {
+  background-image: radial-gradient(
+    farthest-corner circle at var(--pointer-x) var(--pointer-y),
+    rgba(255, 255, 255, 0.75) 5%,
+    rgba(215, 235, 255, 0.25) 30%,
+    rgba(0, 0, 0, 0.35) 95%
+  );
+  mix-blend-mode: soft-light;
+}
+
+/* 3. Pure Studio — clean commercial studio lighting without rainbow shift */
+.card[data-rarity="custom-pure-studio"] .card__shine {
+  clip-path: var(--clip);
+  background-image: linear-gradient(
+    var(--pointer-angle, 135deg),
+    rgba(255, 255, 255, 0) 20%,
+    rgba(255, 255, 255, 0.28) 48%,
+    rgba(255, 255, 255, 0) 76%
+  );
+  background-size: 220% 220%;
+  background-position: var(--background-x) var(--background-y);
+  mix-blend-mode: soft-light;
+  filter: brightness(1) contrast(1.08);
+}
+
+.card[data-rarity="custom-pure-studio"] .card__glare {
+  background-image: radial-gradient(
+    farthest-corner circle at var(--pointer-x) var(--pointer-y),
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(255, 255, 255, 0.16) 28%,
+    rgba(0, 0, 0, 0.2) 90%
+  );
+  mix-blend-mode: overlay;
+}
