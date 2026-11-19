@@ -99,28 +99,26 @@
   max-width: 100%;
   aspect-ratio: var(--card-aspect);
   pointer-events: auto;
+  cursor: pointer;
   z-index: 2;
 }
 
-/* Override upstream translateZ(150px) which clips wide landscape cards */
+/* Let static .card handle all pointer/click events cleanly without 3D hit-test jitter */
 .card .card__translater {
   perspective: 1400px;
   transform: translate3d(var(--translate-x, 0px), var(--translate-y, 0px), 0px) scale(var(--card-scale, 1));
   transform-style: preserve-3d;
+  pointer-events: none;
 }
 
 /* Smooth rotation combining live pointer tilt + 180deg flip */
 .card .card__rotator {
   transform: rotateY(calc(var(--rotate-x, 0deg) + var(--flip-y, 0deg))) rotateX(var(--rotate-y, 0deg));
   transform-style: preserve-3d;
-  cursor: grab;
+  pointer-events: none;
   outline: none;
   box-shadow: none !important;
   transition: none;
-}
-
-.card .card__rotator:active {
-  cursor: grabbing;
 }
 
 /* Force artwork img to cover custom card aspect cleanly */

@@ -1,6 +1,7 @@
 import { PRESETS, FOIL_TEXTURES } from './presets.js';
 import { generateAutoSubjectMask, generateDemoArtwork } from './mask-generator.js';
 import { HoloCardEngine } from './card-engine.js';
+import { exportHoloGif } from './gif-exporter.js';
 
 const cardEl = document.getElementById('card');
 const rotatorEl = document.getElementById('rotator');
@@ -254,14 +255,15 @@ function exportStandaloneHtml() {
   <script>
     const root = document.documentElement, rot = document.getElementById('rotator'), card = document.getElementById('card');
     let hv = false, fl = false, tx = 0, ty = 0, px = 50, py = 50, cx = 0, cy = 0, cpx = 50, cpy = 50, cf = 0, it = 0;
-    rot.addEventListener('pointerenter', () => { hv = true; card.classList.add('interacting'); });
-    rot.addEventListener('pointermove', (e) => {
-      const r = rot.getBoundingClientRect();
-      const x = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)), y = Math.max(0, Math.min(1, (e.clientY - r.top) / r.height));
-      px = x * 100; py = y * 100; tx = (x - 0.5) * ${maxTilt * 2}; ty = (0.5 - y) * ${maxTilt * 1.45};
-    });
-    rot.addEventListener('pointerleave', () => { hv = false; card.classList.remove('interacting'); });
-    rot.addEventListener('click', () => { fl = !fl; });
+    function upd(clientX, clientY) {
+      const r = card.getBoundingClientRect();
+      const x = Math.max(0, Math.min(1, (clientX - r.left) / r.width)), y = Math.max(0, Math.min(1, (clientY - r.top) / r.height));
+      px = x * 100; py = y * 100; tx = (x - 0.5) * ${maxTilt * 2} * (fl ? -1 : 1); ty = (0.5 - y) * ${maxTilt * 1.45};
+    }
+    card.addEventListener('pointerenter', (e) => { hv = true; card.classList.add('interacting'); upd(e.clientX, e.clientY); });
+    card.addEventListener('pointermove', (e) => { hv = true; upd(e.clientX, e.clientY); });
+    card.addEventListener('pointerleave', () => { hv = false; card.classList.remove('interacting'); });
+    card.addEventListener('click', (e) => { e.preventDefault(); fl = !fl; });
     (function tick(){
       it += 0.022;
       if (!hv && ${toggleIdle.checked ? 'true' : 'false'}) { tx = Math.sin(it) * ${maxTilt * 0.45}; ty = Math.cos(it * 0.85) * ${maxTilt * 0.3}; px = 50 + Math.sin(it) * 24; py = 50 + Math.cos(it * 0.85) * 18; }
@@ -367,6 +369,35 @@ function bindControls() {
   backBadgeInput.addEventListener('input', () => (backBadgeEl.textContent = backBadgeInput.value || 'EDITION'));
   backTitleInput.addEventListener('input', () => (backTitleEl.textContent = backTitleInput.value || 'HOLO CARD'));
   backDescInput.addEventListener('input', () => (backDescEl.textContent = backDescInput.value));
+
+  const exportGifBtn = document.getElementById('exportGifBtn');
+  exportGifBtn.addEventListener('click', async () => {
+    const origText = exportGifBtn.textContent;
+    exportGifBtn.disabled = true;
+    try {
+      await exportHoloGif({
+        imgEl: artworkEl,
+        aspect: currentAspect,
+        glowColor: currentPreset.glow || '#7dd3fc',
+        intensity: Number(intensityRange.value) / 100,
+        maxTilt: Number(tiltRange.value),
+        radius: Number(radiusRange.value),
+        hasSlab: toggleSlab.checked,
+        hasBevel: toggleBevel.checked,
+        isGold: currentPreset.presetGroup === 'gold' || currentPreset.rarity === 'rare secret',
+        onProgress: (msg) => {
+          exportGifBtn.textContent = msg;
+        },
+      });
+      showToast('3D 闪卡 GIF 已导出下载！');
+    } catch (err) {
+      console.error(err);
+      showToast('GIF 导出失败，请检查网络后重试');
+    } finally {
+      exportGifBtn.disabled = false;
+      exportGifBtn.textContent = origText;
+    }
+  });
 
   document.getElementById('exportHtmlBtn').addEventListener('click', exportStandaloneHtml);
   document.getElementById('copyEmbedBtn').addEventListener('click', async () => {
